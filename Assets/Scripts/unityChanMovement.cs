@@ -20,13 +20,13 @@ public class unityChanMovement : MonoBehaviour {
 		
 		anim.SetFloat("Speed", rb.velocity.magnitude);
 		
-		moveX *= 10;
-		moveY *= 10;
+		moveX *= 20;
+		moveY *= 20;
 		if(rb.velocity.magnitude < 5) {
 			rb.AddForce(new Vector3(moveX, 0, moveY));
 		}
 		if(rb.velocity != Vector3.zero) {
-			transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(rb.velocity), Time.deltaTime * 100);
+			transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(new Vector3(rb.velocity.x, 0, rb.velocity.z)), Time.deltaTime * 100);
 		}
 		if(Input.GetKeyDown("r")) {
 			transform.position = new Vector3(0,0,0);
