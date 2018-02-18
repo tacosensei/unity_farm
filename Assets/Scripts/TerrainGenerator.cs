@@ -16,7 +16,7 @@ public class TerrainGenerator : MonoBehaviour {
 	TerrainData GenerateTerrain(TerrainData terrainData) {
 		terrainData.size = new Vector3(size_x, height, size_y);
 		terrainData.SetHeights(0,0, GenerateHeights());
-		Debug.Log(terrainData);
+		//Debug.Log(terrainData);
 		return terrainData;
 	}
 
