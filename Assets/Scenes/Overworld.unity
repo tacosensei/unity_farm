@@ -1628,8 +1628,8 @@ Transform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 362514620}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -20.78, y: -1.19, z: 0}
-  m_LocalScale: {x: 28.41, y: 3.61, z: 16.32}
+  m_LocalPosition: {x: -20.78, y: 0.61, z: 0}
+  m_LocalScale: {x: 28.41, y: 0.001, z: 16.32}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 6
@@ -2156,7 +2156,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 4294967295
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!154 &553488233
 TerrainCollider:
   m_ObjectHideFlags: 0
@@ -4177,7 +4177,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   selection: {fileID: 1081741442305640, guid: 6863c6e7b59434146a2681bdfdaf6f67, type: 2}
-  plot: {fileID: 1008256938651890, guid: 08ff04d3037a1854a88eb24ff6eaada4, type: 2}
+  plot: {fileID: 1699207542996754, guid: 08ff04d3037a1854a88eb24ff6eaada4, type: 2}
+  adjacentMode: 0
 --- !u!1 &1104056475
 GameObject:
   m_ObjectHideFlags: 0
