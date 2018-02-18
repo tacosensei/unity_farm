@@ -4,14 +4,28 @@ using UnityEngine;
 
 public class definePlot : MonoBehaviour {
 	
-	public GameObject sphere;
+	public GameObject selection;
+	public GameObject plot;
+	private GameObject pointer;
+	
+	void Start () {
+		pointer = Instantiate(selection);
+	}
 	
 	void Update () {
-		if(Input.GetButtonDown("Fire1"))
-        {
-            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-            if(Physics.Raycast(ray)) {
-                Instantiate(sphere, transform.position, transform.rotation);
+        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+		RaycastHit hit;
+        if(Physics.Raycast(ray, out hit)) {
+			if (hit.transform.gameObject.tag == "valid") {
+				pointer.SetActive(true);
+				pointer.transform.position = hit.point;
+				if(Input.GetMouseButtonDown(0)) {
+					GameObject newPlot = Instantiate(plot);
+					newPlot.transform.position = pointer.transform.position;
+				}
+			}
+			else {
+				pointer.SetActive(false);
 			}
         }
 	}
