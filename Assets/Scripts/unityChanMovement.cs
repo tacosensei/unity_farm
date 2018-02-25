@@ -7,8 +7,10 @@ public class unityChanMovement : MonoBehaviour {
 	private Animator anim;
 	private Rigidbody rb;
 	private float moveX, moveY;
+	private bool canMove;
 	
 	void Start () {
+		canMove = true;
 		anim = transform.GetComponent<Animator>();
 		rb = transform.GetComponent<Rigidbody>();
 	}
@@ -17,6 +19,10 @@ public class unityChanMovement : MonoBehaviour {
 	void Update () {
 		moveX = Input.GetAxisRaw("Horizontal");
 		moveY = Input.GetAxisRaw("Vertical");
+		if(!canMove) {
+			moveX = 0;
+			moveY = 0;
+		}
 		
 		anim.SetFloat("Speed", rb.velocity.magnitude);
 		
@@ -31,5 +37,9 @@ public class unityChanMovement : MonoBehaviour {
 		if(Input.GetKeyDown("r")) {
 			transform.position = new Vector3(0,0,0);
 		}
+	}
+	
+	public void Move(bool onOff) {
+		canMove = onOff;
 	}
 }
