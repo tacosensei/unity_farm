@@ -298,6 +298,7 @@
     <Compile Include="Assets\Scripts\followObject.cs" />
     <Compile Include="Assets\Scripts\Player\inventory.cs" />
     <Compile Include="Assets\Scripts\Player\item.cs" />
+    <Compile Include="Assets\Scripts\Player\ui.cs" />
     <Compile Include="Assets\Scripts\PlotGroup.cs" />
     <Compile Include="Assets\Scripts\TerrainGenerator.cs" />
     <Compile Include="Assets\Scripts\unityChanMovement.cs" />

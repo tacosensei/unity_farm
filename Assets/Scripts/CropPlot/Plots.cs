@@ -17,8 +17,10 @@ public class Plots : MonoBehaviour {
 	void Update () {
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
 		RaycastHit hit;
+		Collider plotableArea = GameObject.Find("PlotArea").GetComponent<Collider>();
+		
         if(Physics.Raycast(ray, out hit)) {
-			if (hit.transform.gameObject.tag == "valid") {
+			if (plotableArea.bounds.Contains(hit.point) && hit.transform.gameObject.tag == "valid") {
 				if(hit.transform.gameObject.name == "Adjacent") {
 					
 					GameObject adj = hit.transform.gameObject;
@@ -27,19 +29,21 @@ public class Plots : MonoBehaviour {
 					GameObject parent = adj.transform.parent.gameObject;
 
 					pointer.transform.position = hit.transform.gameObject.transform.position;
+
+					// add tile to plot group
 					if (Input.GetMouseButtonDown(0)) {
 						GameObject newPlot = Instantiate(plot);
 						newPlot.transform.position = pointer.transform.position;
 
 						AddPlotToGroup(groupID, newPlot, parent, orientation);
 					}
-				}
-				else
-                {
+				} else {
                     pointer.SetActive(true);
                     pointer.transform.position = hit.point;
 					
+					// create new plot group
 				    if (Input.GetMouseButtonDown(0)) {
+						Debug.Log("yup");
 						PlotGroup pg = CreatePlotGroup(pointer.transform.position);
 						GameObject newPlot = Instantiate(plot);
 						newPlot.transform.position = pointer.transform.position;
@@ -47,8 +51,7 @@ public class Plots : MonoBehaviour {
 						plotGroups.Add(pg);
 					}
                 }
-            }
-			else {
+            } else {
 				//pointer.SetActive(false);
 			}
         }
