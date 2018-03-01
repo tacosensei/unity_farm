@@ -52,7 +52,7 @@ public class Plots : MonoBehaviour {
 					}
                 }
             } else {
-				//pointer.SetActive(false);
+				pointer.SetActive(false);
 			}
         }
 	}
