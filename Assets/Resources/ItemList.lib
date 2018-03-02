@@ -1,0 +1,6 @@
+#Basic Inventory Items
+23, Turnip, 30, y, 100, 20
+26, Potato, 20, n, 200, 10
+
+#Seeds
+102, Potato, 30, y, 100, 20, 12
