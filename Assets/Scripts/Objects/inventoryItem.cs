@@ -10,7 +10,6 @@ public class inventoryItem {
 	protected bool isSellable;
 	protected float baseSell;
 	protected float fluxSize;
-	protected int quantity;
 	
 
 	public inventoryItem(int i, string n, int stack, bool sell, float sellB, float f) {
@@ -44,14 +43,5 @@ public class inventoryItem {
 	
 	public float GetFluxSize() {
 		return fluxSize;
-	}
-	
-	public int GetQuantity() {
-		return quantity;
-	}
-	
-	public void SetQuantity(int newQuantity) {
-		quantity = newQuantity;
-		return;
 	}
 }

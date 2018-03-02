@@ -6,6 +6,8 @@ using UnityEngine;
 
 public class itemManager : MonoBehaviour {
 	
+	public int maxInventorySize;
+	
 	protected int itemID;
 	protected string name;
 	protected int stackSize;
@@ -14,21 +16,31 @@ public class itemManager : MonoBehaviour {
 	protected float fluxSize;
 	protected int[] crops;
 	
-	private Dictionary<int, inventoryItem> library = new Dictionary<int, inventoryItem>(200);
-	private List<inventoryItem> inventory = new List<inventoryItem>(20);
+	private Dictionary<int, inventoryItem> library;
+	private itemReference[] inventory;
 	
 	private inventoryItem newItem;
 	
+	protected struct itemReference {
+		public int id, quantity;
+		
+		public itemReference(int itemNum, int q) {
+			id = itemNum;
+			quantity = q;
+		}
+	}
+	
 	
 	void Start() {
+		inventory = new itemReference[maxInventorySize];
 		ItemLoader();
 	}
 	
 	public void ItemLoader() {
 		string[] text = System.IO.File.ReadAllLines(@"Assets/Resources/ItemList.lib");
+		library = new Dictionary<int, inventoryItem>(text.Length);
 		int itemType = -1;
 		foreach(string line in text) {
-			//23, Turnip, 30, y, 100, 20
 			string[] words = line.Split(',');
 			words[0] = words[0].Trim();
 			if(words[0] == "") {
@@ -37,55 +49,42 @@ public class itemManager : MonoBehaviour {
 			char[] charLine = line.ToCharArray();
 			if(charLine[0] == '#') {
 				itemType++;
-				//itemType 0: inventoryItem
-				//itemType 1: seed
-				print("New Item Type: " + itemType);
+				Debug.Log("Loading type " + itemType + " items...");
 				continue;
 			}
 			for(int i = 0; i < words.Length; i++) {
 				words[i] = words[i].Trim();
 				switch(i) {
-					case 0:
+					case 0://ItemID
 						itemID = Int32.Parse(words[0]);
-						//print("ItemID: " + itemID + " ");
 						break;
-					case 1:
+					case 1://Name
 						name = words[1];
-						//print("Name: " + name + " ");
 						break;
-					case 2:
+					case 2://StackSize
 						stackSize = Int32.Parse(words[2]);
-						//print("Stack Size: " + stackSize + " ");
 						break;
-					case 3:
+					case 3://IsSellable
 						if(words[3] == "y") {
 							isSellable = true;
-							//print("Sellable: true ");
 							break;
 						}
 						else {
 							isSellable = false;
-							//print("Sellable: false ");
 							break;
 						}
 						break;
-					case 4:
+					case 4://BaseSellValue
 						baseSell = Single.Parse(words[4]);
-						//print("Base Value: " + baseSell + " ");
 						break;
-					case 5:
+					case 5://FluctuationSize 
 						fluxSize = Single.Parse(words[5]);
-						//print("Flux Range: +/- " + fluxSize + " ");
 						break;
 					case 6:
 						switch(itemType) {
-							case 1://Seed
+							case 1://Seed - OutputCrops
 								string[] newCrops = words[6].Split('/');
 								crops = newCrops.Select(crop => Int32.Parse(crop)).ToArray();
-								//print("Crops: ");
-								for(int n = 0; n < crops.Length; n++) {
-									//print(crops[n] + " ");
-								}
 								break;
 							default:
 								break;
@@ -97,23 +96,84 @@ public class itemManager : MonoBehaviour {
 			}
 			switch(itemType) {
 				case 0:
-					print("Adding Item " + itemID);
 					library.Add(itemID, new inventoryItem(itemID, name, stackSize, isSellable, baseSell, fluxSize));
-					print("New InventoryItem: " + library[itemID].GetName());
 					break;
 				case 1:
-					print("Adding Item " + itemID);
 					library.Add(itemID, new seed(itemID, name, stackSize, isSellable, baseSell, fluxSize, crops));
-					print("New Seed: " + library[itemID].GetName());
-					print("Crop Output Default: " + ((seed)library[itemID]).GetCrops()[0]);
 					break;
 				default: 
 					break;
 			}
 		}
+		Debug.Log("All items loaded into library!");
 	}
 	
 	public inventoryItem FindItem(int id) {
 		return library[id];
 	}
+	
+	public void InsertItem(int id, int q, int slot) {
+		inventory[slot] = new itemReference(id, q);
+	}
+	
+	//attempts to add item(s); returns leftovers
+	public int PickUpItem(int id, int q) {
+		for(int i = 0; i < inventory.Length; i++) {
+			if(inventory[i].id == id && inventory[i].quantity > 0) {
+				int freeSpace = library[id].GetStackSize() - inventory[i].quantity;
+				if(freeSpace >= q) {//when a slot has enough space
+					inventory[i].quantity += q;
+					return 0;//leftover
+				}
+				if(freeSpace < q && freeSpace > 0) {//when a slot has some space, but not enough
+					int leftover = q - freeSpace;
+					inventory[i].quantity += freeSpace;
+					return PickUpItem(id, leftover);//repeat using leftovers in hopes of finding a new slot
+				}
+			}
+			if(inventory[i].quantity <= 0) {
+				inventory[i] = new itemReference(id, q);
+				return 0;
+			}
+		}
+		return q;//when all valid slots are full
+	}
+	
+	//attempts to remove item(s) from inventory; returns whether successful or not
+	public bool SiphonItem(int id, int q) {
+		int itemCount = 0;
+		for(int i = 0; i < inventory.Length; i++) {
+			if(inventory[i].id == id && inventory[i].quantity > 0) {
+				itemCount += inventory[i].quantity;
+			}
+		}
+		if(itemCount < q) {//check that there is enough before attempting removal
+			return false;
+		}
+		else {
+			itemCount = q;
+			for(int i = 0; i < inventory.Length; i++) {
+				if(inventory[i].id == id && inventory[i].quantity > 0) {
+					if(inventory[i].quantity >= itemCount) {
+						inventory[i].quantity -= itemCount;
+						return true;//all items have been siphoned
+					}
+					if(inventory[i].quantity < itemCount) {
+						inventory[i].quantity = 0;
+					}
+				}
+			}
+		}
+		return false;//if I messed up somewhere
+	}
+	
+	public bool InventoryFull() {
+		for(int i = 0; i < inventory.Length; i++) {
+			if(inventory[i].quantity <= 0) {
+				return false;
+			}
+		}
+		return true;
+	}
+
 }
